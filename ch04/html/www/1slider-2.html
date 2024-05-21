@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.js">
+    </script>
+
+    <title>滑鈕測試</title>
+</head>
+
+<body>
+    <label for="kpInput">Kp: </label>
+    <input type="number" id="kpInput" class="param" step="1" min="0" max="100">
+    <div id="kpSlider" class="slider"></div>
+
+    <script>
+        var kpSlider = document.getElementById("kpSlider"); // 取得滑桿預留位置
+        var kpInput = document.getElementById('kpInput'); // 取得數字輸入欄位元素
+
+        noUiSlider.create(kpSlider, {
+            start: 0,
+            step: 1,
+            range: {
+                'min': 0,
+                'max': 100
+            },
+            pips: {
+                mode: 'positions',
+                values: [0, 25, 50, 75, 100],
+                density: 5
+            },
+            connect: [true, false]
+        });
+
+        kpSlider.noUiSlider.on('update', (val) => {  // 設定滑桿的「更新事件」
+            kpInput.value = val;
+        });
+
+        kpInput.addEventListener('change', (evt) => {  // 設定輸入欄位的「變更事件」
+            kpSlider.noUiSlider.set(evt.target.value);
+        });
+    </script>
+</body>
+
+</html>

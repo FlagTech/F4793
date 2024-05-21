@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>車速</title>
+    <style>
+        @font-face {
+            font-family: 'Seven Segment';
+            src: url('fonts/SevenSegment.woff2') format('woff2');
+        }
+
+        body {
+            font-family: sans-serif;
+            font-size: 8vw;
+            color: #9DB2BF;
+            background-color: #222831;
+            margin: 0 0 0 0;
+        }
+
+        #dashboard {
+            display: none;
+            width: 95%;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        #speed {
+            font-family: 'Seven Segment', sans-serif;
+            font-size: 30vw;
+            color: #E94560;
+        }
+
+        #rpm {
+            font-family: 'Seven Segment', sans-serif;
+            font-size: 20vw;
+            color: #DDE6ED
+        }
+
+        #message {
+            text-align: center;
+            color: #E94560;
+            padding-top: 10vw;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="message">
+        OBD-II尚未連線
+    </div>
+    <div id="dashboard">
+        <div>
+            <span id="speed">86.45</span>km/h
+        </div>
+        <div>
+            <span id="rpm">1984</span>rpm
+        </div>
+    </div>
+    <script>
+        var speed = document.getElementById("speed");
+        var rpm = document.getElementById("rpm");
+        var message = document.getElementById("message");
+        var dashboard = document.getElementById("dashboard");
+
+        var hostName = location.hostname;      // 取得連線的主機名稱或IP
+        var wsURL = "ws://" + hostName + "/ws";  // WebSocket連線網址
+        var ws = new WebSocket(wsURL);  // 建立WebSocket物件
+
+        ws.onopen = function (evt) {  // 跟伺服器開啟連線時觸發…
+            dashboard.style.display = "block";
+            message.style.display = "none";
+
+            console.log("已連上ESP32伺服器");
+        }
+        ws.onclose = function (evt) {  // 中斷連線時觸發…
+            message.innerText = "ESP32伺服器中斷連線";
+
+            dashboard.style.display = "none";
+            message.style.display = "block";
+        }
+        ws.onerror = function (evt) {  // 通訊出錯時觸發…
+            message.innerText = "ESP32通訊出錯了：" + evt.data;
+
+            dashboard.style.display = "none";
+            message.style.display = "block";
+        }
+
+        ws.onmessage = function (evt) {
+            let msg = JSON.parse(evt.data);
+
+            speed.innerHTML = msg.spd;
+            rpm.innerHTML = msg.rpm;
+        }
+    </script>
+</body>
+
+</html>

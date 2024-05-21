@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>滑鈕測試</title>
+</head>
+
+<body>
+    <!--在div區塊嵌入span包圍滑桿的顯示值和滑桿，範圍從0到100，預設為0，span的id為sliderValue -->
+    <div id="slider">
+        強度：<span id="sliderValue">0</span>
+        <input type="range" min="0" max="100" value="0" id="sliderRange">
+    </div>
+
+    <!--當滑桿改變時，sliderValue會隨著改變-->
+    <script>
+        var slider = document.getElementById("sliderRange");
+        var sliderValue = document.getElementById("sliderValue");
+
+        //當滑桿改變時，sliderValue會隨著改變
+        slider.oninput = function () {
+            sliderValue.innerHTML = this.value;
+        }
+    </script>
+
+
+</body>
+
+</html>

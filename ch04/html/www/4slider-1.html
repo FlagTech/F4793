@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.js">
+    </script>
+
+    <title>滑鈕測試</title>
+
+    <style>
+        #PID_Settings {
+            /* 外層容器的樣式*/
+            display: flex;
+            /* 「柔性」版面配置 */
+            width: 100%;
+            /* 寬100%，代表與瀏覽器頁面同寬。 */
+        }
+
+        .col {
+            /* 全部內層空間的樣式 */
+            flex: 1;
+            /* 每個優先順序都是1，所以平等排列。 */
+            margin: 20px;
+            /* 四周留白 */
+        }
+
+        .slider {
+            /* 全部滑桿的版面空間設置 */
+            margin-top: 20px;
+            /* 上方留白 */
+            margin-left: 15px;
+            /* 左側留白 */
+            height: 300px;
+            /* 高度 */
+        }
+
+        label,
+        input[type="number"] {
+            /* 全部數字輸入欄位及其標題的樣式 */
+            font-family: Verdana, "sans-serif";
+            /* 字體集 */
+            font-size: 18px;
+            /* 字體大小 */
+            width: 5em;
+            /* 寬度 */
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="PID_Settings">
+        <div class="col"><!-- 目標值設定-->
+            <label for="degInput">目標值: </label><!-- 欄位標題和數字欄位-->
+            <input type="number" id="degInput" class="param" step="0.5" min="30" max="55">
+            <div id="degSlider" class="slider"></div><!-- 滑桿預留位置 -->
+        </div>
+        <div class="col"><!-- Kp值設定-->
+            <label for="kpInput">Kp: </label>
+            <input type="number" id="kpInput" class="param" step="1" min="0" max="100">
+            <div id="kpSlider" class="slider"></div>
+        </div>
+        <div class="col"><!-- Ki值設定-->
+            <label for="kiInput">Ki: </label>
+            <input type="number" id="kiInput" class="param" step="0.05" min="0" max="30">
+            <div id="kiSlider" class="slider"></div>
+        </div>
+        <div class="col"><!-- Kd值設定-->
+            <label for="kdInput">Kd: </label>
+            <input type="number" id="kdInput" class="param" step="1" min="0" max="300">
+            <div id="kdSlider" class="slider"></div>
+        </div>
+    </div>
+
+    <script>
+        var degSlider = document.getElementById('degSlider');  // 參照到「目標值」滑桿
+        var kpSlider = document.getElementById('kpSlider');  // Kp滑桿
+        var kiSlider = document.getElementById('kiSlider');   // Ki滑桿
+        var kdSlider = document.getElementById('kdSlider');  // Kd滑桿
+
+        noUiSlider.create(kpSlider, {  // 設置Kp參數滑桿
+            start: 0,  // 起始數值
+            step: 1,   // 增減值
+            range: {   // 滑桿的數值範圍從0到100
+                'min': 0,
+                'max': 100
+            },
+            orientation: 'vertical', // 垂直擺設
+            direction: 'rtl',       // 數字0放在滑桿底部
+            pips: {             // 設置刻度
+                mode: 'positions',
+                values: [0, 25, 50, 75, 100],
+                density: 2  // 調高密度
+            },
+            connect: [true, false]  // 顯示「連線」
+        });
+
+        noUiSlider.create(kiSlider, {  // Ki參數滑桿
+            start: 0,
+            step: 0.1,   // 增減值
+            range: {  // 範圍從0到20
+                'min': 0,
+                'max': 20
+            },
+            orientation: 'vertical', // 垂直擺設
+            direction: 'rtl',       // 數字0放在滑桿底部
+            pips: {             // 設置刻度
+                mode: 'positions',
+                values: [0, 25, 50, 75, 100],
+                density: 2  // 調高密度
+            },
+            connect: [true, false]  // 顯示「連線」
+        });
+
+        noUiSlider.create(kdSlider, {  // Kd參數滑桿
+            start: 0,
+            step: 0.1,   // 增減值
+            range: {  // 範圍從0到20
+                'min': 0,
+                'max': 20
+            },
+            orientation: 'vertical', // 垂直擺設
+            direction: 'rtl',       // 數字0放在滑桿底部
+            pips: {             // 設置刻度
+                mode: 'positions',
+                values: [0, 25, 50, 75, 100],
+                density: 2  // 調高密度
+            },
+            connect: [true, false]  // 顯示「連線」
+        });
+
+        noUiSlider.create(degSlider, {  // Kd參數滑桿
+            start: 40,
+            step: 0.5,
+            range: {  // 範圍從0到20
+                'min': 0,
+                'max': 20
+            },
+            orientation: 'vertical', // 垂直擺設
+            direction: 'rtl',       // 數字0放在滑桿底部
+            pips: {             // 設置刻度
+                mode: 'positions',
+                values: [0, 25, 50, 75, 100],
+                density: 2  // 調高密度
+            },
+            connect: [true, false]  // 顯示「連線」
+        });
+
+    </script>
+</body>
+
+</html>
