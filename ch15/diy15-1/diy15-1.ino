@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <Knob.h>   // 旋轉編碼器程式庫
-Knob ko(4, 5, 6);   // 建立旋轉編碼器物件
+Knob ko(4, 5, 6);   // 建立旋轉編碼器 (clk, dt, sw)
 
 void setup() {
   Serial.begin(115200);

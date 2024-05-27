@@ -58,6 +58,11 @@ void readBT() {  // 讀取藍牙資料
     if (strcmp(btData.txt, "save\n") == 0) {
       writePrefs();  // 寫入偏好設定
       BT.println("data saved.");
+    } else if (strcmp(btData.txt, "pid\n") == 0) { // 顯示目前的PID參數值
+      BT.printf("kp= %f, ki= %f, kd= %f\n", kp, ki, kd);
+    } else if (strcmp(btData.txt, "clear\n") == 0) { // 清除偏好設定
+      clearPrefs();
+      BT.println("prefs cleared.");
     } else {
       sscanf(btData.txt, "%f,%f,%f", &kp, &ki, &kd);
       BT.printf("kp= %f, ki= %f, kd= %f\n", kp, ki, kd);
@@ -110,8 +115,8 @@ bool readPrefs() { // 從快閃記憶體讀取偏好設定
   bool hasKey = false;
   prefs.begin("PID_LINE", true); // true是「僅讀」
   if (prefs.isKey("kp")) {
-    kp  = prefs.getUChar("kp");  // 讀取紀錄
-    ki  = prefs.getUChar("ki");
+    kp  = prefs.getFloat("kp");  // 讀取紀錄
+    ki  = prefs.getFloat("ki");
     kd  = prefs.getFloat("kd");
   }
   prefs.end();
@@ -121,9 +126,15 @@ bool readPrefs() { // 從快閃記憶體讀取偏好設定
 
 void writePrefs() {  // 寫入偏好設定到快閃記憶體
   prefs.begin("PID_LINE", false);  // 以「可寫」方式開啟
-  prefs.putUChar("kp", kp);
-  prefs.putUChar("ki", ki);
+  prefs.getFloat("kp", kp);
+  prefs.getFloat("ki", ki);
   prefs.putFloat("kd", kd);
+  prefs.end();
+}
+
+void clearPrefs() {
+  prefs.begin("PID_LINE", false);  // false是「可寫」
+  prefs.clear();           // 清除全部鍵、值
   prefs.end();
 }
 

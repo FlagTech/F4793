@@ -1,0 +1,3 @@
+keypad_switch_A.svg是鍵盤定位板，建議採用1.5mm厚的壓克力板。
+
+keypad_switch_B.svg是鍵盤的底板，並用於固定PCB板，PCB板的開孔位置你可能要自行修改。
