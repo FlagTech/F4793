@@ -17,15 +17,18 @@ void readSerial() {     // 讀取序列輸入字串的函式
   if (Serial.available()) {
     String data = Serial.readStringUntil('\n');
     sscanf(data.c_str(), "%f,%f,%f,%f", &setPoint, &kp, &ki, &kd);
-    Serial.printf("setPoint= %.2f, kp= %.2f, ki= %.2f, kd= %.2f\n",
-                  setPoint, kp, ki, kd);
+//    Serial.printf("setPoint= %.2f, kp= %.2f, ki= %.2f, kd= %.2f\n",
+//                  setPoint, kp, ki, kd);
   }
 }
 
+// 讀取溫度，此函式將傳回浮點格式的攝氏溫度值
 float readTemp(float R0 = 10000.0, float beta = 3950.0) {
-  int adc = analogRead(THERMO_PIN);
+  uint16_t adc = analogRead(THERMO_PIN); // 讀取熱敏電阻感測值
   float T0 = 25.0 + 273.15;
-  float r = (adc * R0) / (1023 - adc);
+  float r = (adc * R0) / (( 1 << ADC_BITS) - 1 - adc); // ADC 解析度為 10 位元
+
+  // 轉換成攝氏溫度
   return 1 / (1 / T0 + 1 / beta * log(r / R0)) - 273.15;
 }
 
@@ -47,11 +50,10 @@ float computePID(float in) {    // 計算 PID
 void setup() {
   Serial.begin(115200);
   pinMode(HEATER_PIN, OUTPUT);
-  // 設定類比輸入
-  analogSetAttenuation(ADC_11db); // 類比輸入上限 3.6V
+  
+  ledcSetup(PWM_CHANNEL, 1000, 8); // 設置 PWM
+  ledcAttachPin(HEATER_PIN, PWM_CHANNEL);
   analogReadResolution(ADC_BITS); // 設定 ADC 解析度位元
-  ledcSetup(PWM_CHANNEL, PWM_FREQ, PWM_BITS); // 設置 PWM 輸出
-  ledcAttachPin(HEATER_PIN, PWM_CHANNEL);     // 指定輸出腳
 }
 
 void loop() {
