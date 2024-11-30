@@ -84,6 +84,8 @@ void setup() {
 
   motorL.setFrequency(MOTOR_FREQ); // 設定馬達的PWM調變頻率
   motorR.setFrequency(MOTOR_FREQ);
+  motorL.setDecayMode(drv8833DecayFast);  // 採用快速減模式
+  motorR.setDecayMode(drv8833DecayFast);
   
   prevTime = millis();
 }

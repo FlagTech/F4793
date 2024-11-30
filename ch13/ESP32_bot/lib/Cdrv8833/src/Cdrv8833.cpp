@@ -33,7 +33,7 @@ bool Cdrv8833::init(uint8_t in1Pin, uint8_t in2Pin, uint8_t channel, float offse
 	m_swapDirection = swapDirection;
 	m_channel = channel;
 	m_decayMode = drv8833DecaySlow;
-	ledcSetup(channel, PWM_FREQUENCY, PWM_BIT_RESOLUTION);
+	// ledcSetup(channel, PWM_FREQUENCY, PWM_BIT_RESOLUTION);
 	return true;
 }
 
@@ -76,32 +76,44 @@ bool Cdrv8833::move(float power) {
 	if (power > 0) { // forward
 		if (drv8833DecayFast == m_decayMode) {
 			// forward fast decay
-			ledcDetachPin(m_in2Pin);
+			// ledcDetachPin(m_in2Pin);
+			ledcDetach(m_in2Pin);
 			digitalWrite(m_in2Pin, LOW);
-			ledcAttachPin(m_in1Pin, m_channel);
+			// ledcAttachPin(m_in1Pin, m_channel);
+			ledcAttachChannel(m_in1Pin, PWM_FREQUENCY, PWM_BIT_RESOLUTION, m_channel); // 接腳, 頻率, 解析度, 通道
+			ledcWrite(m_in1Pin, dutyCycle);
 		}
 		else {
 			// forward slow decay
-			ledcDetachPin(m_in1Pin);
+			// ledcDetachPin(m_in1Pin);
+			ledcDetach(m_in1Pin);
 			digitalWrite(m_in1Pin, HIGH);
-			ledcAttachPin(m_in2Pin, m_channel);
+			// ledcAttachPin(m_in2Pin, m_channel);
+			ledcAttachChannel(m_in2Pin, PWM_FREQUENCY, PWM_BIT_RESOLUTION, m_channel);
+			ledcWrite(m_in2Pin, dutyCycle);
 		}
 	}
 	else { // reverse
 		if (drv8833DecayFast == m_decayMode) {
 			// reverse fast decay
-			ledcDetachPin(m_in1Pin);
+			// ledcDetachPin(m_in1Pin);
+			ledcDetach(m_in1Pin);
 			digitalWrite(m_in1Pin, LOW);
-			ledcAttachPin(m_in2Pin, m_channel);
+			// ledcAttachPin(m_in2Pin, m_channel);
+			ledcAttachChannel(m_in2Pin, PWM_FREQUENCY, PWM_BIT_RESOLUTION, m_channel);
+			ledcWrite(m_in2Pin, dutyCycle);
 		}
 		else {
 			// reverse slow decay
-			ledcDetachPin(m_in2Pin);
+			// ledcDetachPin(m_in2Pin);
+			ledcDetach(m_in2Pin);
 			digitalWrite(m_in2Pin, HIGH);
-			ledcAttachPin(m_in1Pin, m_channel);
+			// ledcAttachPin(m_in1Pin, m_channel);
+			ledcAttachChannel(m_in1Pin, PWM_FREQUENCY, PWM_BIT_RESOLUTION, m_channel);
+			ledcWrite(m_in1Pin, dutyCycle);
 		}
 	}
-	ledcWrite(m_channel, dutyCycle);
+	// ledcWrite(m_channel, dutyCycle);
 	return true;
 }
 
@@ -110,8 +122,10 @@ bool Cdrv8833::stop() {
 		return false;
 	if (-1 == m_in2Pin)
 		return false;
-	ledcDetachPin(m_in1Pin);
-	ledcDetachPin(m_in2Pin);
+	// ledcDetachPin(m_in1Pin);
+	// ledcDetachPin(m_in2Pin);
+	ledcDetach(m_in1Pin);
+	ledcDetach(m_in2Pin);
 	digitalWrite(m_in1Pin, LOW);
 	digitalWrite(m_in2Pin, LOW);
 	// m_power = 0;
@@ -123,8 +137,10 @@ bool Cdrv8833::brake() {
 		return false;
 	if (-1 == m_in2Pin)
 		return false;
-	ledcDetachPin(m_in1Pin);
-	ledcDetachPin(m_in2Pin);
+	// ledcDetachPin(m_in1Pin);
+	// ledcDetachPin(m_in2Pin);
+	ledcDetach(m_in1Pin);
+	ledcDetach(m_in2Pin);
 	digitalWrite(m_in1Pin, HIGH);
 	digitalWrite(m_in2Pin, HIGH);
 	// m_power = 0;

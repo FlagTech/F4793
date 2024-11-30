@@ -41,6 +41,7 @@ float readSerial() {   // 讀取序列輸入值
 void setup() {
   Serial.begin(115200);
  
+  motor.setDecayMode(drv8833DecayFast);  // 採用快速減模式
   motor.stop();  // 停止馬達
 
   enc.begin();   // 初始化編碼器

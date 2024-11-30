@@ -24,7 +24,7 @@ Cdrv8833 motor(18, 19, 0, 0, true);  // 左馬達物件，反轉。
 //QEncoder2 enc(33, 34); // 定義「右編碼器」物件
 //Cdrv8833 motor(23, 27, 0, 0);  // 右馬達物件。
 
-drv8833DecayMode decayMode = drv8833DecaySlow;   // 衰減模式
+drv8833DecayMode decayMode = drv8833DecayFast;   // 衰減模式
 uint16_t pwmFreq = 1000;  // PWM調變頻率
 int16_t power = 0;        // PWM工作週期
 int8_t powerStep = 1;

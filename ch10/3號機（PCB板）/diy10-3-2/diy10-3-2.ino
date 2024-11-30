@@ -116,6 +116,8 @@ void setup() {
 
   //motorL.setFrequency(500);  // 選擇性設定PWM調變頻率
   //motorR.setFrequency(500);
+  motorL.setDecayMode(drv8833DecayFast);  // 採用快速減模式
+  motorR.setDecayMode(drv8833DecayFast);
   motorL.stop();
   motorR.stop();
 

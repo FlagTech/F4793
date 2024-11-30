@@ -1,3 +1,8 @@
+/*
+ 程式更新以配合ESP32開發環境3.x版
+ 請參閱：https://swf.com.tw/?p=2000
+*/
+
 #define THERMO_PIN 36 // 熱敏電阻分壓輸入腳
 #define HEATER_PIN 33 // 陶瓷加熱片的 PWM 輸出腳 
 #define ADC_BITS 10 // 類比輸入解析度 10 位元
@@ -25,9 +30,13 @@ void setup() {
   Serial.printf("PWM：%d", power);
   analogSetAttenuation(ADC_11db); // 設定類比輸入上限 3.6V
   analogReadResolution(ADC_BITS); // 設定 ADC（類比轉數位）的解析度
-  ledcSetup(PWM_CHANNEL, 1000, 8);// 設置 PWM：通道 0、1KHz、8 位元
-  ledcAttachPin(HEATER_PIN, PWM_CHANNEL);
-  ledcWrite(PWM_CHANNEL, power); // 開始加熱
+  // 以下三行適用於ESP32開發平台2.x版
+  // ledcSetup(PWM_CHANNEL, 1000, 8);// 設置 PWM：通道 0、1KHz、8 位元
+  // ledcAttachPin(HEATER_PIN, PWM_CHANNEL);
+  // ledcWrite(PWM_CHANNEL, power); // 開始加熱
+  // 以下兩行適用於ESP32開發平台3.x版
+  ledcAttachChannel(HEATER_PIN, 1000, 8, PWM_CHANNEL); // 接腳, 頻率, 解析度, 通道
+  ledcWrite(HEATER_PIN, power); // 開始加熱 (接腳, 工作週期)
   prevTime = millis(); // 紀錄前次時間
 }
 void loop() {
@@ -42,7 +51,10 @@ void loop() {
       float temp = readTemp(); // 取出下一筆 PWM 值
       // 取得感測溫度值
       Serial.printf(", 溫度：%.2f\n", temp);
-      ledcWrite(PWM_CHANNEL, power); // 輸出 PWM 值
+      // 底下敘述適用於ESP32開發平台2.x版
+      // ledcWrite(PWM_CHANNEL, power); // 輸出 PWM 值
+      // 底下敘述適用於ESP32開發平台3.x版
+      ledcWrite(HEATER_PIN, power); // 開始加熱
       Serial.printf("PWM：%d", power);
     }
   }

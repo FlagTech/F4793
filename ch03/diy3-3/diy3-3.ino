@@ -1,3 +1,8 @@
+/*
+ 程式更新以配合ESP32開發環境3.x版
+ 請參閱：https://swf.com.tw/?p=2000
+*/
+
 #include <BluetoothSerial.h> // 藍牙序列埠
 #include <Preferences.h>
 #define THERMO_PIN  36    // 熱敏電阻分壓輸入腳
@@ -126,8 +131,11 @@ void setup() {
   // 設定類比輸入
   analogSetAttenuation(ADC_11db);      // 類比輸入上限3.6V
   analogReadResolution(ADC_BITS);      // 類比輸入的解析度
-  ledcSetup(PWM_CHANNEL, PWM_FREQ, PWM_BITS);  // 設置PWM輸出
-  ledcAttachPin(HEATER_PIN, PWM_CHANNEL);      // 指定輸出腳
+  // 以下兩行適用於ESP32開發平台2.x版
+  // ledcSetup(PWM_CHANNEL, PWM_FREQ, PWM_BITS);  // 設置PWM輸出
+  // ledcAttachPin(HEATER_PIN, PWM_CHANNEL);      // 指定輸出腳
+  // 底下敘述適用於ESP32開發平台3.x版
+  ledcAttachChannel(HEATER_PIN, PWM_FREQ, PWM_BITS, PWM_CHANNEL); // 接腳, 頻率, 解析度, 通道
 }
 
 void loop() {
@@ -139,7 +147,10 @@ void loop() {
 
     float temp = readTemp();          // 讀取溫度
     float power = computePID(temp);   // 計算PID
-    ledcWrite(PWM_CHANNEL, (int)power);  // 輸出PID運算值
+    // 底下敘述適用於ESP32開發平台2.x版
+    // ledcWrite(PWM_CHANNEL, (int)power);  // 加熱
+    // 底下敘述適用於ESP32開發平台3.x版
+    ledcWrite(HEATER_PIN, (int)power); // 加熱
     Serial.printf("%.2f,%.2f\n", setPoint, temp);
   }
 
