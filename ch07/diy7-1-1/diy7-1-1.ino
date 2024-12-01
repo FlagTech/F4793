@@ -8,39 +8,51 @@
 byte pwmChannel = 0;  // 指定PWM通道（全域變數）
 
 void forward(int pwm) {  // 依指定PWM值「快速衰減」正轉
-  // ledcDetachPin(IN2);  // 解除IN2腳的PWM輸出
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
   ledcDetach(IN2);   // 解除IN2腳的PWM輸出
-  digitalWrite(IN2, LOW);      // IN2腳輸出低電位
-  // ledcAttachPin(IN1, pwmChannel);  // IN1腳附加PWM輸出
-  // ledcWrite(pwmChannel, pwm);  // 調整PWM輸出值
   ledcAttachChannel(IN1, 1000, 10, pwmChannel); // 接腳, 頻率, 解析度, 通道
   ledcWrite(IN1, pwm);   // 調整PWM輸出值
+#else
+  ledcDetachPin(IN2);  // 解除IN2腳的PWM輸出
+  ledcAttachPin(IN1, pwmChannel);  // IN1腳附加PWM輸出
+  ledcWrite(pwmChannel, pwm);  // 調整PWM輸出值
+#endif
+  digitalWrite(IN2, LOW);      // IN2腳輸出低電位
 }
 
 void reverse(int pwm) {  // 依指定PWM值「快速衰減」反轉
-  // ledcDetachPin(IN1);  // 解除IN1腳的PWM輸出
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
   ledcDetach(IN1);  // 解除IN1腳的PWM輸出
-  digitalWrite(IN1, LOW);  // IN1腳輸出低電位
-  // ledcAttachPin(IN2, pwmChannel);  // IN2腳附加PWM輸出
-  // ledcWrite(pwmChannel, pwm);  // 調整PWM輸出值
   ledcAttachChannel(IN2, 1000, 10, pwmChannel); // 接腳, 頻率, 解析度, 通道
-  ledcWrite(IN2, pwm);  
+  ledcWrite(IN2, pwm);
+#else
+  ledcDetachPin(IN1);  // 解除IN1腳的PWM輸出
+  ledcAttachPin(IN2, pwmChannel);  // IN2腳附加PWM輸出
+  ledcWrite(pwmChannel, pwm);  // 調整PWM輸出值
+#endif
+  digitalWrite(IN1, LOW);  // IN1腳輸出低電位
 }
 
 void stop() {  // 停止
-  // ledcDetachPin(IN1);  // 解除IN1腳的PWM輸出
-  // ledcDetachPin(IN2);  // 解除IN2腳的PWM輸出
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
   ledcDetach(IN1);  // 解除IN1腳的PWM輸出
   ledcDetach(IN2);  // 解除IN2腳的PWM輸出
+#else
+  ledcDetachPin(IN1);  // 解除IN1腳的PWM輸出
+  ledcDetachPin(IN2);  // 解除IN2腳的PWM輸出
+#endif
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, LOW);
 }
 
 void brake() {  // 煞車
-  // ledcDetachPin(IN1);  // 解除IN1腳的PWM輸出
-  // ledcDetachPin(IN2);  // 解除IN2腳的PWM輸出
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
   ledcDetach(IN1);  // 解除IN1腳的PWM輸出
   ledcDetach(IN2);  // 解除IN2腳的PWM輸出
+#else
+  ledcDetachPin(IN1);  // 解除IN1腳的PWM輸出
+  ledcDetachPin(IN2);  // 解除IN2腳的PWM輸出
+#endif
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, HIGH);
 }
@@ -50,7 +62,10 @@ void setup() {
   Serial.begin(115200);
   pinMode(IN1, OUTPUT); // 馬達接腳設成「輸出」
   pinMode(IN2, OUTPUT);
-  // ledcSetup(pwmChannel, 1000, 10);  // 設置PWM：通道0, 1000Hz, 10位元
+  #if ESP_ARDUINO_VERSION <= ESP_ARDUINO_VERSION_VAL(2, 0, 0)
+  // 底下敘述僅適用於2.x版以下SDK
+  ledcSetup(pwmChannel, 1000, 10);  // 設置PWM：通道0, 1000Hz, 10位元
+  #endif
 }
 
 void loop() {

@@ -26,21 +26,29 @@ void setup() {
   Serial.begin(115200);
   pinMode(HEATER_PIN, OUTPUT);
   
-  // 以下兩行適用於ESP32開發平台2.x版
-  // ledcSetup(PWM_CHANNEL, 1000, 8); // 設置 PWM 通道、頻率和解析度
-  // ledcAttachPin(HEATER_PIN, PWM_CHANNEL); // 設定 PWM 輸出腳
+  #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
   // 底下敘述適用於ESP32開發平台3.x版
   ledcAttachChannel(HEATER_PIN, 1000, 8, PWM_CHANNEL); // 接腳, 頻率, 解析度, 通道
+  #else
+  // 以下兩行適用於ESP32開發平台2.x版
+  ledcSetup(PWM_CHANNEL, 1000, 8); // 設置 PWM 通道、頻率和解析度
+  ledcAttachPin(HEATER_PIN, PWM_CHANNEL); // 設定 PWM 輸出腳
+  #endif
+
   // 設定類比轉數位（ADC）的電壓和解析度 
   analogSetAttenuation(ADC_11db); // 類比輸入上限 3.6V，這一行可不寫
   analogReadResolution(ADC_BITS); // ADC 位元解析度
   
   baseTemp = readTemp();          // 讀取並設定基底溫度
   power = int((setPoint - baseTemp) * pwmPerDeg);
-  // 底下敘述適用於ESP32開發平台2.x版
-  // ledcWrite(PWM_CHANNEL, power);  // 開始加熱
+  
+  #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
   // 底下敘述適用於ESP32開發平台3.x版
   ledcWrite(HEATER_PIN, power); // 開始加熱
+  #else
+  // 底下敘述適用於ESP32開發平台2.x版
+  ledcWrite(PWM_CHANNEL, power);  // 開始加熱
+  #endif
 }
 
 void loop() {

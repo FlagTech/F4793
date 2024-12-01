@@ -211,11 +211,15 @@ void setup() {
   // 設定類比輸入
   analogSetAttenuation(ADC_11db);  // 類比輸入上限3.6V
   analogReadResolution(ADC_BITS);  // 類比輸入位元解析度
-  // 以下兩行適用於ESP32開發平台2.x版
-  // ledcSetup(PWM_CHANNEL, PWM_FREQ, PWM_BITS);  // 設置PWM輸出
-  // ledcAttachPin(HEATER, PWM_CHANNEL);      // 指定輸出腳
+  
+  #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
   // 底下敘述適用於ESP32開發平台3.x版
   ledcAttachChannel(HEATER, PWM_FREQ, PWM_BITS, PWM_CHANNEL); // 接腳, 頻率, 解析度, 通道
+  #else
+  // 以下兩行適用於ESP32開發平台2.x版
+  ledcSetup(PWM_CHANNEL, PWM_FREQ, PWM_BITS);  // 設置PWM輸出
+  ledcAttachPin(HEATER, PWM_CHANNEL);      // 指定輸出腳
+  #endif
 }
 
 void loop() {
@@ -227,12 +231,14 @@ void loop() {
 
     temp = readTemp();      // 讀取溫度
     float power = computePID(temp);   // 計算PID
-    // 底下敘述適用於ESP32開發平台2.x版
-    // ledcWrite(PWM_CHANNEL, (int)power);  // 加熱
-    // 底下敘述適用於ESP32開發平台3.x版
+    
+    #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
     ledcWrite(HEATER, (int)power); // 加熱
+    #else
+    ledcWrite(PWM_CHANNEL, (int)power);  // 加熱
+    #endif
+    
     // Serial.printf("%.2f,%.2f\n", setPoint, temp);
-
     OLED();  // 更新顯示畫面
     notifyClients();  // 向網路用戶端傳遞感測資料
   }

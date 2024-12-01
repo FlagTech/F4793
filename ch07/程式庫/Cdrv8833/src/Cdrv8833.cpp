@@ -1,5 +1,6 @@
+#include <Arduino.h>
 #include "Cdrv8833.h"
-#include "esp32-hal-gpio.h"
+#include <esp32-hal-gpio.h>
 
 Cdrv8833::Cdrv8833() {
 	// not initialized
@@ -76,44 +77,61 @@ bool Cdrv8833::move(float power) {
 	if (power > 0) { // forward
 		if (drv8833DecayFast == m_decayMode) {
 			// forward fast decay
-			// ledcDetachPin(m_in2Pin);
+			#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
 			ledcDetach(m_in2Pin);
-			digitalWrite(m_in2Pin, LOW);
-			// ledcAttachPin(m_in1Pin, m_channel);
 			ledcAttachChannel(m_in1Pin, PWM_FREQUENCY, PWM_BIT_RESOLUTION, m_channel); // 接腳, 頻率, 解析度, 通道
 			ledcWrite(m_in1Pin, dutyCycle);
+			#else
+			ledcDetachPin(m_in2Pin);
+			ledcAttachPin(m_in1Pin, m_channel);
+			#endif
+
+			digitalWrite(m_in2Pin, LOW);
 		}
 		else {
 			// forward slow decay
-			// ledcDetachPin(m_in1Pin);
+			#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
 			ledcDetach(m_in1Pin);
-			digitalWrite(m_in1Pin, HIGH);
-			// ledcAttachPin(m_in2Pin, m_channel);
 			ledcAttachChannel(m_in2Pin, PWM_FREQUENCY, PWM_BIT_RESOLUTION, m_channel);
 			ledcWrite(m_in2Pin, dutyCycle);
+			#else
+			ledcDetachPin(m_in1Pin);
+			ledcAttachPin(m_in2Pin, m_channel);
+			#endif
+			
+			digitalWrite(m_in1Pin, HIGH);
 		}
-	}
-	else { // reverse
+	} else { // reverse
 		if (drv8833DecayFast == m_decayMode) {
 			// reverse fast decay
-			// ledcDetachPin(m_in1Pin);
+			#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
 			ledcDetach(m_in1Pin);
-			digitalWrite(m_in1Pin, LOW);
-			// ledcAttachPin(m_in2Pin, m_channel);
 			ledcAttachChannel(m_in2Pin, PWM_FREQUENCY, PWM_BIT_RESOLUTION, m_channel);
 			ledcWrite(m_in2Pin, dutyCycle);
-		}
-		else {
+			#else
+			ledcDetachPin(m_in1Pin);
+			ledcAttachPin(m_in2Pin, m_channel);
+			#endif
+			
+			digitalWrite(m_in1Pin, LOW);
+		} else {
 			// reverse slow decay
-			// ledcDetachPin(m_in2Pin);
+			#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
 			ledcDetach(m_in2Pin);
-			digitalWrite(m_in2Pin, HIGH);
-			// ledcAttachPin(m_in1Pin, m_channel);
 			ledcAttachChannel(m_in1Pin, PWM_FREQUENCY, PWM_BIT_RESOLUTION, m_channel);
 			ledcWrite(m_in1Pin, dutyCycle);
+			#else
+			ledcDetachPin(m_in2Pin);
+			ledcAttachPin(m_in1Pin, m_channel);
+			#endif
+			
+			digitalWrite(m_in2Pin, HIGH);
 		}
 	}
-	// ledcWrite(m_channel, dutyCycle);
+
+	#if ESP_ARDUINO_VERSION <= ESP_ARDUINO_VERSION_VAL(2, 0, 0)
+	ledcWrite(m_channel, dutyCycle);
+	#endif
 	return true;
 }
 
@@ -122,10 +140,15 @@ bool Cdrv8833::stop() {
 		return false;
 	if (-1 == m_in2Pin)
 		return false;
-	// ledcDetachPin(m_in1Pin);
-	// ledcDetachPin(m_in2Pin);
+
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
 	ledcDetach(m_in1Pin);
 	ledcDetach(m_in2Pin);
+#else
+	ledcDetachPin(m_in1Pin);
+	ledcDetachPin(m_in2Pin);
+#endif
+
 	digitalWrite(m_in1Pin, LOW);
 	digitalWrite(m_in2Pin, LOW);
 	// m_power = 0;
@@ -137,10 +160,15 @@ bool Cdrv8833::brake() {
 		return false;
 	if (-1 == m_in2Pin)
 		return false;
-	// ledcDetachPin(m_in1Pin);
-	// ledcDetachPin(m_in2Pin);
+
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
 	ledcDetach(m_in1Pin);
 	ledcDetach(m_in2Pin);
+#else
+	ledcDetachPin(m_in1Pin);
+	ledcDetachPin(m_in2Pin);
+#endif
+
 	digitalWrite(m_in1Pin, HIGH);
 	digitalWrite(m_in2Pin, HIGH);
 	// m_power = 0;
